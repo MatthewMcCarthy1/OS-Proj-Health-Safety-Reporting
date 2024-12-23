@@ -10,6 +10,8 @@ public class ClientHandler {
     private ObjectInputStream in; //receive messages from the server
     private Scanner scanner; //read user input
 
+    private static boolean running = true;
+
     //send a message to the server
     private void sendMessage(String message) {
         try {
@@ -37,6 +39,9 @@ public class ClientHandler {
             String input = scanner.nextLine();
             sendMessage(input);
         }
+        if(serverMessage.equals("Exiting Application.")) {
+            running = false;
+        }
     }
 
     //run the client
@@ -50,20 +55,22 @@ public class ClientHandler {
             System.out.println("Connected to the server at " + SERVER_ADDRESS + ":" + SERVER_PORT);
 
             //main loop to handle server interactions
-            while (true) {
+            while (running) {
                 handleServerInteraction();
             }
 
         } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Error in communication with server: " + e.getMessage());
+            if (running) {
+                System.err.println("Error in communication with server: " + e.getMessage());
+            }
         } finally {
             //Closing connection
             try {
                 in.close();
                 out.close();
                 socket.close();
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
+            } catch (IOException e) {
+                System.err.println("Error closing socket: " + e.getMessage());
             }
         }
     }

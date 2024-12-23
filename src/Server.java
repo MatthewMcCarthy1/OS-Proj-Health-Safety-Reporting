@@ -3,7 +3,7 @@ import java.net.*;
 
 public class Server {
     private static final int PORT = 8080; //server listens for connections on this port num
-    private static boolean running = true; //flag to control the state of server
+    private static boolean running = true;
 
     public static void main(String[] args) {
         SharedObject sharedObject = new SharedObject(); //store users and reports
@@ -30,10 +30,5 @@ public class Server {
         } catch (IOException e) {
             System.err.println("Server exception: " + e.getMessage());
         }
-    }
-
-    //graceful shutdown
-    public static void shutdown() {
-        running = false;
     }
 }

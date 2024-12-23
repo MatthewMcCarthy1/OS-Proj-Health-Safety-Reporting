@@ -27,7 +27,7 @@ public class Report {
         this.date = date;
         this.employeeId = employeeId;
         this.status = Status.OPEN; //Case is open by default
-        this.assignedEmployeeId = employeeId;
+        this.assignedEmployeeId = assignedEmployeeId;
     }
 
     //Getters and Setters
