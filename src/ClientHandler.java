@@ -30,12 +30,11 @@ public class ClientHandler {
         return message;
     }
 
-    /*handle server interactions (easiest way was to use .startswith(enter), obviously not a good idea but for a small
-    project like this with simple prompts it saves having to write out a list of code receiving and sending responses.
+    /*handle server interactions (robust way is to check for a specific prompt signal)
     */
     private void handleServerInteraction() throws IOException, ClassNotFoundException {
         String serverMessage = receiveMessage();
-        if (serverMessage.startsWith("Enter")) {
+        if (serverMessage.endsWith(" >> ")) {
             String input = scanner.nextLine();
             sendMessage(input);
         }

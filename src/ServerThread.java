@@ -49,6 +49,10 @@ public class ServerThread extends Thread {
         return currentUser;
     }
 
+    public void sendPrompt(String msg) {
+        sendMessage(msg + " >> ");
+    }
+
     //send and receive messages to and from the client
     public void sendMessage(String msg) {
         try {

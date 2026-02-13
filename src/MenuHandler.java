@@ -21,7 +21,7 @@ public class MenuHandler {
                 if (serverThread.getCurrentUser() == null) {
                     sendMessage("Welcome to the Health and Safety Reporting System");
                     sendMessage("Please enter 1 to Sign in, 2 to Register an account or 0 to exit.");
-                    sendMessage("Enter your choice:");
+                    sendPrompt("Enter your choice:");
 
                     String choice = receiveInput();
                     switch (choice) {
@@ -48,7 +48,7 @@ public class MenuHandler {
                     sendMessage("6. View all health and safety reports assigned to you");
                     sendMessage("7. Update your password");
                     sendMessage("0. Logout");
-                    sendMessage("Enter your choice:");
+                    sendPrompt("Enter your choice:");
 
                     String choice = receiveInput();
                     switch (choice) {
@@ -89,10 +89,10 @@ public class MenuHandler {
 
     //SIGN IN
     private void handleSignIn() throws IOException, ClassNotFoundException {
-        sendMessage("Enter email: ");
+        sendPrompt("Enter email: ");
         String email = receiveInput();
 
-        sendMessage("Enter password: ");
+        sendPrompt("Enter password: ");
         String password = receiveInput();
 
         if (sharedObject.authenticateUser(email, password)) {
@@ -113,12 +113,12 @@ public class MenuHandler {
     //REGISTER
     private void handleRegistration() throws IOException, ClassNotFoundException {
 
-        sendMessage("Enter name:");
+        sendPrompt("Enter name:");
         String name = receiveInput();
 
         String employeeId;
         while (true) {
-            sendMessage("Enter employee ID (must be an integer):");
+            sendPrompt("Enter employee ID (must be an integer):");
             employeeId = receiveInput();
             try {
                 Integer.parseInt(employeeId);
@@ -128,16 +128,16 @@ public class MenuHandler {
             }
         }
 
-        sendMessage("Enter email:");
+        sendPrompt("Enter email:");
         String email = receiveInput();
 
-        sendMessage("Enter password:");
+        sendPrompt("Enter password:");
         String password = receiveInput();
 
-        sendMessage("Enter department name:");
+        sendPrompt("Enter department name:");
         String departmentName = receiveInput();
 
-        sendMessage("Enter role:");
+        sendPrompt("Enter role:");
         String role = receiveInput();
 
         User newUser = new User(name, employeeId, email, password, departmentName, role);
@@ -151,7 +151,7 @@ public class MenuHandler {
     //CREATE REPORT
     private void createReport() throws IOException, ClassNotFoundException {
         try {
-            sendMessage("Enter report type (ACCIDENT or RISK):");
+            sendPrompt("Enter report type (ACCIDENT or RISK):");
             Report.ReportType reportType = Report.ReportType.valueOf(receiveInput().toUpperCase());
 
             LocalDateTime localDateTime = LocalDateTime.now();
@@ -184,7 +184,7 @@ public class MenuHandler {
     //ASSIGN A REPORT
     private void assignReport() throws IOException, ClassNotFoundException {
         try {
-            sendMessage("Enter Report ID to assign:");
+            sendPrompt("Enter Report ID to assign:");
             String reportId = receiveInput();
 
             LinkedList<Report> reports = sharedObject.getAllReports();
@@ -203,7 +203,7 @@ public class MenuHandler {
                 return;
             }
 
-            sendMessage("Enter Employee ID to assign the report to:");
+            sendPrompt("Enter Employee ID to assign the report to:");
             String employeeId = receiveInput();
 
             boolean employeeExists = false;
@@ -224,7 +224,7 @@ public class MenuHandler {
 
             Report.Status newStatus = null;
             while (newStatus == null) {
-                sendMessage("Enter status (OPEN, ASSIGNED, or CLOSED):");
+                sendPrompt("Enter status (OPEN, ASSIGNED, or CLOSED):");
                 String statusInput = receiveInput().toUpperCase();
                 try {
                     newStatus = Report.Status.valueOf(statusInput);
@@ -271,7 +271,7 @@ public class MenuHandler {
     //UPDATE PASSWORD
     private void updatePassword() throws IOException, ClassNotFoundException {
         try {
-            sendMessage("Enter new password:");
+            sendPrompt("Enter new password:");
             String newPassword = receiveInput();
 
             //update the password and save it
@@ -289,6 +289,10 @@ public class MenuHandler {
     //send and receive message to and from the client
     private void sendMessage(String message) throws IOException {
         serverThread.sendMessage(message);
+    }
+
+    private void sendPrompt(String message) throws IOException {
+        serverThread.sendPrompt(message);
     }
 
     private String receiveInput() throws IOException, ClassNotFoundException {
