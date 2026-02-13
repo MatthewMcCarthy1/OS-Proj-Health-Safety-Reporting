@@ -1,4 +1,5 @@
 import java.time.LocalDateTime;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Report {
     //enums for report type and status to restrict possible values
@@ -19,24 +20,39 @@ public class Report {
     private final String employeeId; //employeeId
     private Status status; //Open, Assigned or Closed
     private String assignedEmployeeId; //Initially empty until the report has been assigned
-    private static int idCounter = 0;
+    private static final AtomicInteger idCounter = new AtomicInteger(0);
 
     public Report(ReportType reportType, LocalDateTime date, String reportId, String employeeId, String assignedEmployeeId) {
         this.reportType = reportType;
-        this.reportId = generateReportID(); //reportId set in constructor as it is unique
+        // If a reportId is provided (e.g. from file), use it; otherwise generate a new one
+        if (reportId == null || reportId.isEmpty()) {
+            this.reportId = generateReportID();
+        } else {
+            this.reportId = reportId;
+            updateCounterFromId(reportId);
+        }
         this.date = date;
         this.employeeId = employeeId;
         this.status = Status.OPEN; //Case is open by default
         this.assignedEmployeeId = assignedEmployeeId;
     }
 
+    private String generateReportID() {
+        return "R-" + idCounter.incrementAndGet();
+    }
+
+    private static void updateCounterFromId(String reportId) {
+        try {
+            if (reportId.startsWith("R-")) {
+                int idNum = Integer.parseInt(reportId.substring(2));
+                idCounter.accumulateAndGet(idNum, Math::max);
+            }
+        } catch (NumberFormatException ignored) {}
+    }
+
     //Getters and Setters
     public ReportType getReportType() {
         return reportType;
-    }
-
-    public String generateReportID() {
-        return "R-" + (++idCounter);
     }
 
     public String getReportId() {
