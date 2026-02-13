@@ -24,13 +24,21 @@ public class SharedObject {
         loadReportsFromFile("reports.txt");
     }
 
-    //add a user if the email and employee id provided are unique
-    public synchronized boolean addUser(User user) {
-        //check if the email and employee id are unique
+    //internal method to add a user to memory without saving to file
+    private boolean addUserToMemory(User user) {
         if (!emailSet.contains(user.getEmail()) && !employeeIdSet.contains(user.getEmployeeId())) {
             users.add(user); //add user to list
             emailSet.add(user.getEmail()); //add email to set
             employeeIdSet.add(user.getEmployeeId()); //add employeeid to set
+            return true;
+        }
+        return false;
+    }
+
+    //add a user if the email and employee id provided are unique
+    public synchronized boolean addUser(User user) {
+        //check if the email and employee id are unique
+        if (addUserToMemory(user)) {
             //save the user to users.txt
             saveUsersToFile("users.txt");
             return true;
@@ -40,9 +48,10 @@ public class SharedObject {
 
     //authenticate user input (check if email and password entered match any existing user.)
     public synchronized boolean authenticateUser(String email, String password) {
+        String hashedInput = User.hashPassword(password);
         for (User user : users) {
             //check if the email and password match
-            if (user.getEmail().equals(email) && user.getPassword().equals(password)) {
+            if (user.getEmail().equals(email) && user.getPassword().equals(hashedInput)) {
                 return true;
             }
         }
@@ -83,10 +92,10 @@ public class SharedObject {
                 //split the line into user fields
                 String[] userFields = line.split(" - ");
                 if (userFields.length == 6) {
-                    //create a new user and add to the list and sets
+                    //create a new user and add to the list and sets (true because stored passwords are already hashed)
                     User user = new User(userFields[0], userFields[1], userFields[2], userFields[3],
-                            userFields[4], userFields[5]);
-                    addUser(user);
+                            userFields[4], userFields[5], true);
+                    addUserToMemory(user);
                 } else {
                     System.err.println("Invalid user data format in file: " + fileName);
                 }
@@ -96,9 +105,14 @@ public class SharedObject {
         }
     }
 
+    //internal method to add a report to memory without saving to file
+    private void addReportToMemory(Report report) {
+        reports.add(report);
+    }
+
     //add the report to the list and save it to reports.txt
     public synchronized void addReport(Report report) {
-        reports.add(report);
+        addReportToMemory(report);
         saveReportsToFile("reports.txt");
     }
 
@@ -150,7 +164,7 @@ public class SharedObject {
                     );
                     report.setStatus(Report.Status.valueOf(reportFields[4]));
                     report.setAssignedEmployeeId(reportFields[5]);
-                    addReport(report); // Add report to the list
+                    addReportToMemory(report); // Add report to the list
                 } else {
                     System.err.println("Invalid report data format in file: " + fileName);
                 }
