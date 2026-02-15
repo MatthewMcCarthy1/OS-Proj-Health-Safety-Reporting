@@ -55,3 +55,5 @@ javac src/*.java
 - **Performance:** Optimized O(N) loading logic to prevent redundant file writes.
 - **Integrity:** Implemented logic to preserve unique report IDs across server restarts.
 - **Security:** Integrated `java.security.MessageDigest` for one-way cryptographic hashing.
+
+*Developed for the Operating Systems module at ATU. Improvements have been made after submission.*
